@@ -5,7 +5,7 @@ module Rails3JQueryAutocomplete
         order = options[:order]
 
         table_prefix = model ? "#{model.table_name}." : ""
-        order || "LOWER(#{table_prefix}#{method}) ASC"
+        order || "#{table_prefix}#{method} ASC"
       end
 
       def active_record_get_autocomplete_items(parameters)
@@ -41,9 +41,9 @@ module Rails3JQueryAutocomplete
         is_full_search = options[:full]
         like_clause = (postgres?(model) ? 'ILIKE' : 'LIKE')
         if options[:hstore]
-          ["LOWER(#{table_name}.#{method} -> '#{options[:hstore][:key]}') LIKE ?", "#{(is_full_search ? '%' : '')}#{term.downcase}%"]
+          ["#{table_name}.#{method} -> '#{options[:hstore][:key]}') LIKE ?", "#{(is_full_search ? '%' : '')}#{term.downcase}%"]
         else
-          ["LOWER(#{table_name}.#{method}) #{like_clause} ?", "#{(is_full_search ? '%' : '')}#{term.downcase}%"]
+          ["#{table_name}.#{method} #{like_clause} ?", "#{(is_full_search ? '%' : '')}#{term.downcase}%"]
         end
       end
 

@@ -13,15 +13,15 @@ module Rails3JQueryAutocomplete
         end
 
         context 'no order is specified' do
-          should 'return the order clause by the LOWER(table_name.field) ASC' do
-            assert_equal "LOWER(field) ASC", active_record_get_autocomplete_order(:field, {})
+          should 'return the order clause by the table_name.field ASC' do
+            assert_equal "field ASC", active_record_get_autocomplete_order(:field, {})
           end
 
           context 'a different model is specified' do
-            should 'return the order clause by the LOWER(table_name.field) ASC' do
+            should 'return the order clause by the table_name.field ASC' do
               model = Object.new
               mock(model).table_name { 'table_name' }
-              assert_equal "LOWER(table_name.field) ASC", active_record_get_autocomplete_order(:field, {}, model)
+              assert_equal "table_name.field ASC", active_record_get_autocomplete_order(:field, {}, model)
             end
           end
         end
@@ -130,14 +130,14 @@ module Rails3JQueryAutocomplete
         context 'Not Postgres' do
           should 'return options for where' do
             mock(self).postgres?(@model) { false }
-            assert_equal ["LOWER(table_name.method) LIKE ?", "query%"], get_autocomplete_where_clause(@model, @term, @method, @options)
+            assert_equal ["table_name.method LIKE ?", "query%"], get_autocomplete_where_clause(@model, @term, @method, @options)
           end
         end
 
         context 'Postgres' do
           should 'return options for where with ILIKE' do
             mock(self).postgres?(@model) { true }
-            assert_equal ["LOWER(table_name.method) ILIKE ?", "query%"], get_autocomplete_where_clause(@model, @term, @method, @options)
+            assert_equal ["table_name.method ILIKE ?", "query%"], get_autocomplete_where_clause(@model, @term, @method, @options)
           end
         end
 
@@ -146,7 +146,7 @@ module Rails3JQueryAutocomplete
             mock(self).postgres?(@model) { true }
             @options[:hstore] = {method: :hsmethod, key: :hskey}
             @method = :hsmethod
-            assert_equal ["LOWER(table_name.hsmethod -> 'hskey') LIKE ?", "query%"], get_autocomplete_where_clause(@model, @term, @method, @options)
+            assert_equal ["table_name.hsmethod -> 'hskey' LIKE ?", "query%"], get_autocomplete_where_clause(@model, @term, @method, @options)
           end
         end
 
@@ -154,7 +154,7 @@ module Rails3JQueryAutocomplete
           should 'return options for where with the term sourrounded by %%' do
             mock(self).postgres?(@model) { false }
             @options[:full] = true
-            assert_equal ["LOWER(table_name.method) LIKE ?", "%query%"], get_autocomplete_where_clause(@model, @term, @method, @options)
+            assert_equal ["table_name.method LIKE ?", "%query%"], get_autocomplete_where_clause(@model, @term, @method, @options)
           end
         end
       end
